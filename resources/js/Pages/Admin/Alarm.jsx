@@ -9,7 +9,7 @@ export default function Alarm() {
   const [espConnected, setEspConnected] = useState(false);
   const [isAlarmTriggered, setIsAlarmTriggered] = useState(false);
 
-  const ESP32_BASE_URL = 'http://192.168.191.1';
+  const ESP32_BASE_URL = '/esp32';
 
   useEffect(() => {
     const interval = setInterval(async () => {
