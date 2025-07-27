@@ -7,15 +7,7 @@ export default defineConfig({
         laravel({
             input: 'resources/js/app.jsx',
             refresh: true,
-            publicDirectory: 'public_html',
         }),
         react(),
     ],
-    build: {
-        outDir: 'public_html/build', 
-        manifest: true,
-        rollupOptions: {
-            input: 'resources/js/app.jsx',
-        },
-    },
 });
