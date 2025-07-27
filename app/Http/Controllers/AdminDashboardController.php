@@ -12,9 +12,9 @@ class AdminDashboardController extends Controller
         return Inertia::render('Admin/Dashboard');
     }
 
-    public function streaming()
+    public function alarm()
     {
-        return Inertia::render('Admin/Streaming');
+        return Inertia::render('Admin/Alarm');
     }
 
     public function log()

@@ -24,10 +24,10 @@ export default function Sidebar() {
       match: 'Dashboard',
     },
     {
-      name: 'Streaming CCTV',
-      href: route('streaming'),
+      name: 'Alarm',
+      href: route('alarm'),
       icon: <Video size={18} />,
-      match: 'Streaming',
+      match: 'Alarm',
     },
     {
       name: 'Log Deteksi',
@@ -53,7 +53,7 @@ export default function Sidebar() {
     <aside className="w-64 h-screen bg-gray-900 text-white fixed flex flex-col justify-between">
       <div>
         <div className="p-4 text-xl font-bold text-center border-b border-gray-700">
-          FaceGuard
+          NLC Farm
         </div>
         <nav className="flex flex-col p-4 space-y-1">
           {menus.map((menu, index) => {

@@ -1,4 +1,3 @@
-// resources/js/Layouts/AdminLayout.jsx
 import React from 'react';
 import Sidebar from '@/Components/Sidebar';
 

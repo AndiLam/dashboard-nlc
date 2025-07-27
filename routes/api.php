@@ -3,8 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
-use App\Models\Log as LogModel; // pakai alias agar tidak bentrok dengan Facade
+use App\Http\Controllers\AlarmScheduleController;
+use App\Models\Log as LogModel;
+
+Route::get('/alarm/schedule', [AlarmScheduleController::class, 'index']);
+Route::post('/alarm/schedule', [AlarmScheduleController::class, 'store']);
+Route::post('/alarm/schedule/{id}/deactivate', [AlarmScheduleController::class, 'deactivate']);
 
 Route::post('/notifikasi', function (Request $request) {
     $pesan = $request->input('pesan', 'Tidak ada pesan');
