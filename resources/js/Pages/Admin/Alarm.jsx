@@ -9,34 +9,30 @@ export default function Alarm() {
   const [espConnected, setEspConnected] = useState(false);
   const [isAlarmTriggered, setIsAlarmTriggered] = useState(false);
 
-  // Ganti IP ini dengan alamat IP ESP32 kamu
   const ESP32_BASE_URL = 'http://192.168.191.1';
 
-  // Cek koneksi dan status alarm secara berkala
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
         const res = await axios.get(`${ESP32_BASE_URL}/status`);
         setEspConnected(true);
         setAlarmStatus(res.data.alarm_active);
-        setIsAlarmTriggered(res.data.alarm_triggered); // status dari ESP32 kalau alarm sedang berbunyi
+        setIsAlarmTriggered(res.data.alarm_triggered);
       } catch (error) {
         setEspConnected(false);
         console.error('ESP32 tidak terhubung:', error.message);
       }
-    }, 3000); // cek setiap 3 detik
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
 
   const toggleAlarm = async () => {
     setLoading(true);
-    const newStatus = !alarmStatus;
-
     try {
-      const endpoint = newStatus ? `${ESP32_BASE_URL}/alarm/on` : `${ESP32_BASE_URL}/alarm/off`;
-      await axios.get(endpoint);
-      setAlarmStatus(newStatus);
+      const endpoint = alarmStatus ? 'off' : 'on';
+      await axios.get(`${ESP32_BASE_URL}/alarm/${endpoint}`);
+      setAlarmStatus(!alarmStatus);
     } catch (error) {
       console.error('Gagal menghubungi ESP32:', error);
       alert('Gagal menghubungi ESP32. Pastikan ESP32 terhubung.');
@@ -46,10 +42,7 @@ export default function Alarm() {
   };
 
   const handleScheduleChange = (e) => {
-    setSchedule({
-      ...schedule,
-      [e.target.name]: e.target.value,
-    });
+    setSchedule({ ...schedule, [e.target.name]: e.target.value });
   };
 
   const submitSchedule = async (e) => {
@@ -64,7 +57,6 @@ export default function Alarm() {
         time_on: schedule.on,
         time_off: schedule.off,
       });
-
       alert('Jadwal berhasil dikirim ke ESP32!');
     } catch (error) {
       console.error('Gagal mengirim jadwal:', error);
@@ -86,7 +78,6 @@ export default function Alarm() {
     <AdminLayout>
       <h1 className="text-2xl font-bold mb-6">Kontrol & Jadwal Alarm (ESP32)</h1>
 
-      {/* Status Koneksi */}
       <div className="mb-4 text-sm">
         Status Koneksi ESP32:{' '}
         <span className={`font-semibold ${espConnected ? 'text-green-600' : 'text-red-600'}`}>
@@ -94,7 +85,6 @@ export default function Alarm() {
         </span>
       </div>
 
-      {/* Kontrol Manual */}
       <div className="bg-white shadow-md rounded-lg p-4 mb-6">
         <h2 className="text-lg font-semibold mb-4">Kontrol Alarm Manual</h2>
         <button
@@ -108,7 +98,6 @@ export default function Alarm() {
         </button>
       </div>
 
-      {/* Matikan Alarm Jika Bunyi */}
       {isAlarmTriggered && (
         <div className="bg-red-100 text-red-700 border border-red-300 rounded-md p-4 mb-6">
           <p className="font-semibold mb-2">Alarm sedang berbunyi!</p>
@@ -121,7 +110,6 @@ export default function Alarm() {
         </div>
       )}
 
-      {/* Jadwal Alarm */}
       <div className="bg-white shadow-md rounded-lg p-4">
         <h2 className="text-lg font-semibold mb-4">Jadwal Alarm Otomatis</h2>
         <form onSubmit={submitSchedule} className="space-y-4">
@@ -139,7 +127,6 @@ export default function Alarm() {
               required
             />
           </div>
-
           <div>
             <label htmlFor="off" className="block text-sm font-medium text-gray-700">
               Waktu Nonaktif
@@ -154,7 +141,6 @@ export default function Alarm() {
               required
             />
           </div>
-
           <button
             type="submit"
             disabled={!espConnected}
