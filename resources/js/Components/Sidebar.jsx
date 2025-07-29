@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import {
   LayoutDashboard,
   Video,
+  Siren,
   Bell,
   Users,
   FileText,
@@ -24,9 +25,15 @@ export default function Sidebar() {
       match: 'Dashboard',
     },
     {
+      name: 'Streaming',
+      href: route('streaming'),
+      icon: <Video size={18} />,
+      match: 'Streaming',
+    },
+    {
       name: 'Alarm',
       href: route('alarm'),
-      icon: <Video size={18} />,
+      icon: <Siren size={18} />,
       match: 'Alarm',
     },
     {

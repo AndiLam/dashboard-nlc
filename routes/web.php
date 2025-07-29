@@ -8,6 +8,7 @@ Route::redirect('/', '/login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/streaming', [AdminDashboardController::class, 'streaming'])->name('streaming');
     Route::get('/alarm', [AdminDashboardController::class, 'alarm'])->name('alarm');
     Route::get('/log-deteksi', [AdminDashboardController::class, 'log'])->name('log');
     Route::get('/wajah-dikenal', [AdminDashboardController::class, 'wajah'])->name('wajah');
@@ -16,7 +17,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
 
 require __DIR__.'/auth.php';
 
