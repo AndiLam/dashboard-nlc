@@ -166,11 +166,15 @@ export default function DaftarWajah() {
           <tbody className="bg-white divide-y divide-gray-200">
             {loading ? (
               <tr>
-                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">Memuat data...</td>
+                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
+                  Memuat data...
+                </td>
               </tr>
-            ) : wajahDikenal.length === 0 ? (
+            ) : !Array.isArray(wajahDikenal) || wajahDikenal.length === 0 ? (
               <tr>
-                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">Belum ada data wajah.</td>
+                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
+                  Belum ada data wajah.
+                </td>
               </tr>
             ) : (
               wajahDikenal.map((data, index) => (
