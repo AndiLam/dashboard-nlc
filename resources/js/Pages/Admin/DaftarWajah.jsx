@@ -18,7 +18,7 @@ export default function DaftarWajah() {
     setLoading(true);
     try {
       const res = await axios.get('/wajah-dikenal');
-      setWajahDikenal(res.data);
+      setWajahDikenal(res.data.data);
     } catch (error) {
       console.error('Gagal mengambil data:', error);
     } finally {
