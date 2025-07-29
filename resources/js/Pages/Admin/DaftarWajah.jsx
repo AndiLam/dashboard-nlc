@@ -18,9 +18,11 @@ export default function DaftarWajah() {
     setLoading(true);
     try {
       const res = await axios.get('/wajah-dikenal');
-      setWajahDikenal(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+      setWajahDikenal(data);
     } catch (error) {
       console.error('Gagal mengambil data:', error);
+      setWajahDikenal([]);
     } finally {
       setLoading(false);
     }
@@ -123,7 +125,7 @@ export default function DaftarWajah() {
                   onChange={(e) => {
                     const file = e.target.files[0];
                     setForm({ ...form, foto: file });
-                    setPreview(URL.createObjectURL(file));
+                    setPreview(file ? URL.createObjectURL(file) : null);
                   }}
                 />
                 {preview && (
@@ -166,11 +168,15 @@ export default function DaftarWajah() {
           <tbody className="bg-white divide-y divide-gray-200">
             {loading ? (
               <tr>
-                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">Memuat data...</td>
+                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
+                  Memuat data...
+                </td>
               </tr>
             ) : wajahDikenal.length === 0 ? (
               <tr>
-                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">Belum ada data wajah.</td>
+                <td colSpan="5" className="px-4 py-4 text-center text-gray-500">
+                  Belum ada data wajah.
+                </td>
               </tr>
             ) : (
               wajahDikenal.map((data, index) => (
@@ -178,8 +184,12 @@ export default function DaftarWajah() {
                   <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2">
                     <img
-                      src={`/wajah/${data.foto}`}
+                      src={data.foto ? `/wajah/${data.foto}` : '/placeholder.jpg'}
                       alt={`Wajah ${data.nama}`}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/placeholder.jpg';
+                      }}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   </td>
