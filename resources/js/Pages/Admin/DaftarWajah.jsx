@@ -178,7 +178,7 @@ export default function DaftarWajah() {
                   <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2">
                     <img
-                      src={`/storage/${data.foto}`}
+                      src={`/wajah/${data.foto}`}
                       alt={`Wajah ${data.nama}`}
                       className="w-10 h-10 rounded-full object-cover"
                     />

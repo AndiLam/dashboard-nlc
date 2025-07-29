@@ -21,7 +21,10 @@ class WajahDikenalController extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')->store('wajah', 'public');
+            $foto = $request->file('foto');
+            $namaFile = uniqid() . '.' . $foto->getClientOriginalExtension();
+            $foto->move(public_path('wajah'), $namaFile);
+            $validated['foto'] = $namaFile;
         }
 
         $wajah = WajahDikenal::create($validated);
@@ -40,7 +43,10 @@ class WajahDikenalController extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')->store('wajah', 'public');
+            $foto = $request->file('foto');
+            $namaFile = uniqid() . '.' . $foto->getClientOriginalExtension();
+            $foto->move(public_path('wajah'), $namaFile);
+            $validated['foto'] = $namaFile;
         }
 
         $wajah->update($validated);
