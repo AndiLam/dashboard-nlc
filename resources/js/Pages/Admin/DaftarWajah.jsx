@@ -17,7 +17,7 @@ export default function DaftarWajah() {
   const fetchWajah = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/wajah-dikenal');
+      const res = await axios.get('/wajah-dikenal');
       setWajahDikenal(res.data);
     } catch (error) {
       console.error('Gagal mengambil data:', error);
@@ -37,7 +37,7 @@ export default function DaftarWajah() {
     }
 
     try {
-      await axios.post('/api/wajah-dikenal', formData, {
+      await axios.post('/wajah-dikenal', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       fetchWajah();
@@ -50,7 +50,7 @@ export default function DaftarWajah() {
   const handleDelete = async (id) => {
     if (!confirm('Yakin ingin menghapus data ini?')) return;
     try {
-      await axios.delete(`/api/wajah-dikenal/${id}`);
+      await axios.delete(`/wajah-dikenal/${id}`);
       fetchWajah();
     } catch (error) {
       console.error('Gagal menghapus:', error);
