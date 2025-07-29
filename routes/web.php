@@ -44,10 +44,12 @@ Route::get('/stream/{filename}', function ($filename) {
 
 
 //daftar wajah
-Route::get('/wajah-dikenal', [WajahDikenalController::class, 'index']);
-Route::post('/wajah-dikenal', [WajahDikenalController::class, 'store']);
-Route::put('/wajah-dikenal/{id}', [WajahDikenalController::class, 'update']);
-Route::delete('/wajah-dikenal/{id}', [WajahDikenalController::class, 'destroy']);
+Route::prefix('api')->group(function () {
+    Route::get('/wajah-dikenal', [WajahDikenalController::class, 'index']);
+    Route::post('/wajah-dikenal', [WajahDikenalController::class, 'store']);
+    Route::put('/wajah-dikenal/{id}', [WajahDikenalController::class, 'update']);
+    Route::delete('/wajah-dikenal/{id}', [WajahDikenalController::class, 'destroy']);
+});
 
 require __DIR__.'/auth.php';
 
