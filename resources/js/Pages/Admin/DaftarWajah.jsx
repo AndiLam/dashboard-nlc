@@ -18,8 +18,7 @@ export default function DaftarWajah() {
     setLoading(true);
     try {
       const res = await axios.get('/api/wajah-dikenal');
-      console.log('Data dari API:', res.data); // 👈 tambahkan ini
-      setWajahDikenal(res.data.data); // asumsinya `data` array
+      setWajahDikenal(res.data);
     } catch (error) {
       console.error('Gagal mengambil data:', error);
     } finally {
