@@ -32,8 +32,8 @@ class AdminDashboardController extends Controller
         return Inertia::render('Admin/DaftarWajah');
     }
 
-    public function notifikasi()
-    {
-        return Inertia::render('Admin/Notifikasi');
-    }
+    //public function notifikasi()
+    //{
+        //return Inertia::render('Admin/Notifikasi');
+    //}
 }
