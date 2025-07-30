@@ -61,7 +61,7 @@ export default function Sidebar() {
       <div>
         <div className="p-4 text-center border-b border-gray-700">
           <img
-            src="assets/logo.png"
+            src="/../public/assets/logo.png"
             alt="Logo"
             className="mx-auto mb-2 h-16 w-16"
           />
