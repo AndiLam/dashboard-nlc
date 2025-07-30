@@ -59,8 +59,13 @@ export default function Sidebar() {
   return (
     <aside className="w-64 h-screen bg-gray-900 text-white fixed flex flex-col justify-between">
       <div>
-        <div className="p-4 text-xl font-bold text-center border-b border-gray-700">
-          NLC Farm
+        <div className="p-4 text-center border-b border-gray-700">
+          <img
+            src="assets/logo.png"
+            alt="Logo"
+            className="mx-auto mb-2 h-16 w-16"
+          />
+          <div className="text-xl font-bold">NLC Farm</div>
         </div>
         <nav className="flex flex-col p-4 space-y-1">
           {menus.map((menu, index) => {
