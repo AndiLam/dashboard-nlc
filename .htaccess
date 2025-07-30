@@ -12,6 +12,13 @@
     # Handle X-XSRF-Token Header
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+    
+    # Redirect favicon to correct file if requested at wrong path
+    RewriteRule ^assets/logo\.ico$ public/assets/logo.ico [L]
+    
+    # Biar akses /wajah/nama.jpg diarahkan ke /public/wajah/nama.jpg
+    RewriteCond %{REQUEST_URI} ^/wajah/
+    RewriteRule ^wajah/(.*)$ public/wajah/$1 [L]
 
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
