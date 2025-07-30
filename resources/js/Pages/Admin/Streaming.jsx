@@ -1,4 +1,3 @@
-// resources/js/Pages/Admin/Streaming.jsx
 import React, { useEffect, useRef } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Hls from 'hls.js';
@@ -31,10 +30,6 @@ export default function Streaming() {
             muted
           />
         </div>
-
-        <p className="mt-4 text-sm text-gray-600">
-          Jika video tidak muncul, pastikan ffmpeg sedang berjalan dan file HLS tersedia di <code>/public/hls/</code>.
-        </p>
       </div>
     </AdminLayout>
   );

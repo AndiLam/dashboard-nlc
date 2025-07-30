@@ -48,12 +48,12 @@ export default function Sidebar() {
       icon: <Users size={18} />,
       match: 'DaftarWajah',
     },
-    {
-      name: 'Notifikasi',
-      href: route('notifikasi'),
-      icon: <Bell size={18} />,
-      match: 'Notifikasi',
-    },
+    //{
+      //name: 'Notifikasi',
+      //href: route('notifikasi'),
+      //icon: <Bell size={18} />,
+      //match: 'Notifikasi',
+    //},
   ];
 
   return (

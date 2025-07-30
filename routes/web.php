@@ -16,7 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/alarm', [AdminDashboardController::class, 'alarm'])->name('alarm');
     Route::get('/log-deteksi', [AdminDashboardController::class, 'log'])->name('log');
     Route::get('/wajah-dikenal', [AdminDashboardController::class, 'wajah'])->name('wajah');
-    Route::get('/notifikasi', [AdminDashboardController::class, 'notifikasi'])->name('notifikasi');
+    //Route::get('/notifikasi', [AdminDashboardController::class, 'notifikasi'])->name('notifikasi');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

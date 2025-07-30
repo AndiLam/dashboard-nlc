@@ -1,13 +1,12 @@
-// resources/js/Pages/Admin/LogDeteksi.jsx
 import React from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function LogDeteksi() {
-  // Contoh data log dummy
+  // data log dummy
   const logs = [
-    { id: 1, nama: 'Tidak dikenal', waktu: '2025-07-26 13:45', status: 'Ditolak' },
-    { id: 2, nama: 'Budi Santoso', waktu: '2025-07-26 13:40', status: 'Dikenal' },
-    { id: 3, nama: 'Tidak dikenal', waktu: '2025-07-26 13:30', status: 'Ditolak' },
+    { id: 1, nama: 'Tidak dikenal', waktu: '2025-07-26 13:45', status: 'Tidak Dikenal' },
+    { id: 2, nama: 'Agus', waktu: '2025-07-26 13:40', status: 'Dikenal' },
+    { id: 3, nama: 'Tidak dikenal', waktu: '2025-07-26 13:30', status: 'Tidak Dikenal' },
   ];
 
   return (
