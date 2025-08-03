@@ -1,12 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Sidebar from '@/Components/Sidebar';
-import { subscribeUser } from '@/hooks/usePushSubscribe';
 
 export default function AdminLayout({ children }) {
-  useEffect(() => {
-    subscribeUser();
-  }, []);
-
   return (
     <div className="flex">
       <Sidebar />
