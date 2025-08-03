@@ -3,58 +3,74 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
-use App\Models\PushSubscription;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class PushController extends Controller
 {
+    // Method untuk menyimpan push subscription ke user
     public function subscribe(Request $request)
     {
-        $data = $request->input('subscription');
+        $user = Auth::user();
 
-        if (!$data || !isset($data['endpoint'])) {
-            return response()->json(['error' => 'Invalid subscription'], 400);
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        PushSubscription::updateOrCreate(
-            ['endpoint' => $data['endpoint']],
-            [
-                'public_key' => $data['keys']['p256dh'],
-                'auth_token' => $data['keys']['auth'],
-                'content_encoding' => $data['contentEncoding'] ?? 'aes128gcm',
-            ]
+        $request->validate([
+            'endpoint' => 'required|string',
+            'keys.auth' => 'required|string',
+            'keys.p256dh' => 'required|string',
+        ]);
+
+        $user->updatePushSubscription(
+            $request->endpoint,
+            $request->input('keys.p256dh'),
+            $request->input('keys.auth')
         );
 
-        return response()->json(['success' => true]);
+        return response()->json(['message' => 'Push subscription saved.']);
     }
 
+    // Method untuk mengirim notifikasi ke semua user yang berlangganan
     public function send(Request $request)
     {
-        $payload = $request->input('message', 'Notifikasi dari server');
+        $payload = json_encode([
+            'title' => $request->input('title', 'Notifikasi Baru!'),
+            'body'  => $request->input('body', 'Ini adalah pesan notifikasi dari Laravel.'),
+        ]);
 
         $auth = [
             'VAPID' => [
-                'subject' => 'mailto:muhammad.ilham7217@gmail.com',
-                'publicKey' => config('webpush.public_key'),
-                'privateKey' => config('webpush.private_key'),
+                'subject' => 'mailto:admin@example.com',
+                'publicKey' => config('webpush.vapid.public_key'),
+                'privateKey' => config('webpush.vapid.private_key'),
             ],
         ];
 
-        $webPush = new WebPush($auth['VAPID']);
+        $webPush = new WebPush($auth);
+        $users = User::whereHas('pushSubscriptions')->get();
 
-        $subscriptions = PushSubscription::all();
-        foreach ($subscriptions as $sub) {
-            $subscription = Subscription::create([
-                'endpoint' => $sub->endpoint,
-                'publicKey' => $sub->public_key,
-                'authToken' => $sub->auth_token,
-                'contentEncoding' => $sub->content_encoding,
-            ]);
+        foreach ($users as $user) {
+            foreach ($user->pushSubscriptions as $sub) {
+                $subscription = Subscription::create([
+                    'endpoint' => $sub->endpoint,
+                    'publicKey' => $sub->public_key,
+                    'authToken' => $sub->auth_token,
+                    'contentEncoding' => $sub->content_encoding,
+                ]);
 
-            $webPush->sendOneNotification($subscription, $payload);
+                try {
+                    $webPush->sendOneNotification($subscription, $payload);
+                } catch (\Exception $e) {
+                    Log::error('Gagal mengirim notifikasi: ' . $e->getMessage());
+                }
+            }
         }
 
-        return response()->json(['sent' => true]);
+        return response()->json(['message' => 'Notifikasi dikirim.']);
     }
 }

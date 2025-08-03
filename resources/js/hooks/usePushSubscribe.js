@@ -1,14 +1,16 @@
+import axios from 'axios';
+
 const publicKey = import.meta.env.VITE_PUSH_PUBLIC_KEY;
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
   const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
 export async function subscribeUser() {
-  if ('serviceWorker' in navigator && 'PushManager' in window) {
+  if ('serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.ready;
 
@@ -17,17 +19,17 @@ export async function subscribeUser() {
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       });
 
-      await fetch('/api/push-subscribe', {
-        method: 'POST',
-        body: JSON.stringify({ subscription }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      await axios.post(
+        '/api/push-subscribe',
+        subscription,
+        {
+          withCredentials: true, // ⬅️ penting agar session Laravel dikenali
+        }
+      );
 
-      console.log('Push subscription successful');
+      console.log('✅ Push subscription successful');
     } catch (error) {
-      console.error('Push subscription failed:', error);
+      console.error('❌ Push subscription failed:', error);
     }
   }
 }
