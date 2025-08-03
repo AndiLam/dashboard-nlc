@@ -12,6 +12,7 @@ export default defineConfig({
         }),
         react(),
         VitePWA({
+        base: '/build/',
         registerType: 'autoUpdate',
         includeAssets: [
             'favicon.ico',
@@ -45,8 +46,6 @@ export default defineConfig({
         },
         workbox: {
             globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
-            modifyURLPrefix: {
-          '': '/build/'},
             navigateFallback: '/public/offline.html',
             navigateFallbackDenylist: [/^\/api\//],
         }
