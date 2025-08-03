@@ -12,7 +12,7 @@ export default defineConfig({
         }),
         react(),
         VitePWA({
-        base: '/',
+        base: '/build/',
         registerType: 'autoUpdate',
         injectRegister: 'auto',
         filename: 'sw.js',
@@ -23,7 +23,6 @@ export default defineConfig({
             '/public/assets/logo.png',
             '/public/assets/logo-192.png',
             '/public/assets/logo-512.png',
-            //'offline.html'
         ],
         manifest: {
             name: 'Sistem Keamanan Wajah',
@@ -50,8 +49,6 @@ export default defineConfig({
         workbox: {
             globDirectory: 'public_html/build',
             globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
-            //navigateFallback: '/offline.html',
-            //navigateFallbackDenylist: [/^\/api\//],
         }
         }),
     ],
