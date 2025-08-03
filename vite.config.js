@@ -13,23 +13,24 @@ export default defineConfig({
         react(),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['favicon.ico', 'robots.txt', '/public/assets/logo.png'],
+            includeAssets: ['favicon.ico', 'robots.txt', 'public/assets/logo.png'],
             manifest: {
                 name: 'Sistem Keamanan Wajah',
-                short_name: 'Keamanan',
-                description: 'Aplikasi keamanan berbasis pengenalan wajah',
+                short_name: 'NLC Farm',
+                description: 'Dashboard keamanan berbasis pengenalan wajah',
                 start_url: '/',
+                scope: '/',
                 display: 'standalone',
                 background_color: '#ffffff',
                 theme_color: '#4f46e5',
                 icons: [
                     {
-                        src: '/public/assets/logo-192.png',
+                        src: 'public/assets/logo-192.png',
                         sizes: '192x192',
                         type: 'image/png'
                     },
                     {
-                        src: '/public/assets/logo-512.png',
+                        src: 'public/assets/logo-512.png',
                         sizes: '512x512',
                         type: 'image/png'
                     }
