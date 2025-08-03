@@ -17,7 +17,6 @@ class PushController extends Controller
             return response()->json(['error' => 'Invalid subscription'], 400);
         }
 
-        // Simpan atau update jika endpoint sudah ada
         PushSubscription::updateOrCreate(
             ['endpoint' => $data['endpoint']],
             [
