@@ -18,7 +18,8 @@ export default defineConfig({
             'robots.txt',
             '/public/assets/logo.png',
             '/public/assets/logo-192.png',
-            '/public/assets/logo-512.png'
+            '/public/assets/logo-512.png',
+            'offline.html'
         ],
         manifest: {
             name: 'Sistem Keamanan Wajah',
@@ -44,7 +45,7 @@ export default defineConfig({
         },
         workbox: {
             globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
-            navigateFallback: '/public/offline.html',
+            navigateFallback: '/offline.html',
             navigateFallbackDenylist: [/^\/api\//],
         }
         })
