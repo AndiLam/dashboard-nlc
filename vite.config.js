@@ -19,7 +19,7 @@ export default defineConfig({
             '/public/assets/logo.png',
             '/public/assets/logo-192.png',
             '/public/assets/logo-512.png',
-            'offline.html'
+            '/public/offline.html'
         ],
         manifest: {
             name: 'Sistem Keamanan Wajah',
@@ -45,7 +45,7 @@ export default defineConfig({
         },
         workbox: {
             globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
-            navigateFallback: '/offline.html',
+            navigateFallback: '/public/offline.html',
             navigateFallbackDenylist: [/^\/api\//],
         }
         })
