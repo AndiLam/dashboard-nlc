@@ -26,8 +26,8 @@ export default defineConfig({
             name: 'Sistem Keamanan Wajah',
             short_name: 'NLC Farm',
             description: 'Dashboard keamanan berbasis pengenalan wajah',
-            start_url: '/',
-            scope: '/',
+            start_url: '/build/',
+            scope: '/build/',
             display: 'standalone',
             background_color: '#ffffff',
             theme_color: '#4f46e5',
@@ -45,6 +45,7 @@ export default defineConfig({
             ]
         },
         workbox: {
+            globDirectory: 'public_html/build',
             globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
             navigateFallback: '/public/offline.html',
             navigateFallbackDenylist: [/^\/api\//],
