@@ -45,10 +45,12 @@ export default defineConfig({
         },
         workbox: {
             globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
+            modifyURLPrefix: {
+          '': '/build/'},
             navigateFallback: '/public/offline.html',
             navigateFallbackDenylist: [/^\/api\//],
         }
-        })
+        }),
     ],
     build: {
         outDir: '../public_html/build',
