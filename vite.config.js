@@ -18,7 +18,10 @@ export default defineConfig(({ mode }) => {
         base: '/build/',
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        filename: 'sw.js',
+        // Ganti default service worker dengan custom-sw.js
+        srcDir: 'resources/js/', // lokasi folder custom-sw.js
+        filename: 'custom-sw.js', // nama file custom
+        strategies: 'injectManifest',
         manifestFilename: 'manifest.webmanifest',
         includeAssets: [
           'favicon.ico',
@@ -49,7 +52,7 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
-        workbox: {
+        injectManifest: {
           globDirectory: 'public_html/build',
           globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
         },
