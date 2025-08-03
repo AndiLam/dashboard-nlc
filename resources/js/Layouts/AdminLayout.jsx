@@ -1,21 +1,41 @@
 import React, { useEffect } from 'react';
 import Sidebar from '@/Components/Sidebar';
 
-// Fungsi dari file lain atau definisikan langsung di sini
+// Konversi public key dari base64url ke Uint8Array
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+}
+
+// Fungsi untuk subscribe ke Push
 const subscribeToPush = async () => {
   if ('serviceWorker' in navigator && 'PushManager' in window) {
-    const registration = await navigator.serviceWorker.ready;
+    try {
+      const registration = await navigator.serviceWorker.ready;
 
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: '<BH2sycRs5sjCKoUXET1DbOV9mHmpW7H7Nh3S8s6QMtftS1-IUdeXRm89fd2Cewn3mRVtAs1PTVK5avsa-ReVG6c>',
-    });
+      const publicKey = import.meta.env.PUSH_PUBLIC_KEY;
+      const applicationServerKey = urlBase64ToUint8Array(publicKey);
 
-    await fetch('/api/push-subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription),
-    });
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey,
+      });
+
+      await fetch('/api/push-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription }),
+      });
+    } catch (error) {
+      console.error('Push subscription failed:', error);
+    }
+  } else {
+    console.warn('Push messaging is not supported');
   }
 };
 
