@@ -12,22 +12,25 @@ export default defineConfig({
         }),
         react(),
         VitePWA({
-        base: '/build/',
+        base: '/',
         registerType: 'autoUpdate',
+        injectRegister: 'auto',
+        filename: 'sw.js',
+        manifestFilename: 'manifest.webmanifest',
         includeAssets: [
             'favicon.ico',
             'robots.txt',
             '/public/assets/logo.png',
             '/public/assets/logo-192.png',
             '/public/assets/logo-512.png',
-            '/public/offline.html'
+            'offline.html'
         ],
         manifest: {
             name: 'Sistem Keamanan Wajah',
             short_name: 'NLC Farm',
             description: 'Dashboard keamanan berbasis pengenalan wajah',
-            start_url: '/build/',
-            scope: '/build/',
+            start_url: '/',
+            scope: '/',
             display: 'standalone',
             background_color: '#ffffff',
             theme_color: '#4f46e5',
@@ -47,7 +50,7 @@ export default defineConfig({
         workbox: {
             globDirectory: 'public_html/build',
             globPatterns: ['**/*.{js,css,ico,png,svg,webmanifest}'],
-            navigateFallback: '/public/offline.html',
+            navigateFallback: '/offline.html',
             navigateFallbackDenylist: [/^\/api\//],
         }
         }),
