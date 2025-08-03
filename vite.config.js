@@ -12,7 +12,7 @@ export default defineConfig({
         react(),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['favicon.ico', 'robots.txt', 'assets/icon.png'],
+            includeAssets: ['favicon.ico', 'robots.txt', '/public/assets/logo.png'],
             manifest: {
                 name: 'Sistem Keamanan Wajah',
                 short_name: 'Keamanan',
@@ -23,12 +23,12 @@ export default defineConfig({
                 theme_color: '#4f46e5',
                 icons: [
                     {
-                        src: '/assets/icon.png',
+                        src: '/public/assets/logo.png',
                         sizes: '192x192',
                         type: 'image/png'
                     },
                     {
-                        src: '/assets/icon.png',
+                        src: '/public/assets/logo.png',
                         sizes: '512x512',
                         type: 'image/png'
                     }
