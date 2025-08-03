@@ -36,8 +36,8 @@ class PushController extends Controller
         $auth = [
             'VAPID' => [
                 'subject' => 'mailto:muhammad.ilham7217@gmail.com',
-                'publicKey' => config('push.public_key'),
-                'privateKey' => config('push.private_key'),
+                'publicKey' => config('webpush.public_key'),
+                'privateKey' => config('webpush.private_key'),
             ],
         ];
 
