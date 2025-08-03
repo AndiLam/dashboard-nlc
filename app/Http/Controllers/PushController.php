@@ -14,11 +14,7 @@ class PushController extends Controller
     // Method untuk menyimpan push subscription ke user
     public function subscribe(Request $request)
     {
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+        Log::info('Data push:', $request->all());
 
         $request->validate([
             'endpoint' => 'required|string',
@@ -26,13 +22,13 @@ class PushController extends Controller
             'keys.p256dh' => 'required|string',
         ]);
 
-        $user->updatePushSubscription(
-            $request->endpoint,
-            $request->input('keys.p256dh'),
-            $request->input('keys.auth')
-        );
+        Log::info('Push subscription received.', [
+            'endpoint' => $request->endpoint,
+            'p256dh' => $request->input('keys.p256dh'),
+            'auth' => $request->input('keys.auth'),
+        ]);
 
-        return response()->json(['message' => 'Push subscription saved.']);
+        return response()->json(['message' => 'Push subscription simulated saved.']);
     }
 
     // Method untuk mengirim notifikasi ke semua user yang berlangganan
