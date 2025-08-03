@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\WajahDikenalController;
+use App\Http\Controllers\PushController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -49,6 +50,8 @@ Route::prefix('api')->group(function () {
     Route::post('/wajah-dikenal', [WajahDikenalController::class, 'store']);
     Route::put('/wajah-dikenal/{id}', [WajahDikenalController::class, 'update']);
     Route::delete('/wajah-dikenal/{id}', [WajahDikenalController::class, 'destroy']);
+    Route::post('/push-subscribe', [PushController::class, 'subscribe']);
+    Route::post('/push-send', [PushController::class, 'send']); // bisa dipanggil manual/ESP32});
 });
 
 require __DIR__.'/auth.php';
