@@ -1,24 +1,53 @@
+import { useState } from 'react';
+import axios from 'axios';
 import Checkbox from '@/Components/Checkbox';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const [data, setData] = useState({
         email: '',
         password: '',
         remember: false,
     });
 
-    const submit = (e) => {
-        e.preventDefault();
+    const [errors, setErrors] = useState({});
+    const [processing, setProcessing] = useState(false);
 
-        post(route('login'), {
-            onFinish: () => reset('password'),
-        });
+    const handleChange = (e) => {
+        const { name, type, checked, value } = e.target;
+        setData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
+    };
+
+    const submit = async (e) => {
+        e.preventDefault();
+        setProcessing(true);
+        setErrors({});
+
+        try {
+            await axios.get('/sanctum/csrf-cookie'); // pastikan CSRF sudah ada
+
+            await axios.post('/login', {
+                email: data.email,
+                password: data.password,
+                remember: data.remember,
+            });
+
+            router.visit('/dashboard'); // arahkan ke dashboard setelah login
+        } catch (error) {
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors || {});
+            }
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
@@ -43,7 +72,7 @@ export default function Login({ status, canResetPassword }) {
                         className="mt-1 block w-full"
                         autoComplete="username"
                         isFocused
-                        onChange={(e) => setData('email', e.target.value)}
+                        onChange={handleChange}
                     />
 
                     <InputError message={errors.email} className="mt-2" />
@@ -59,7 +88,7 @@ export default function Login({ status, canResetPassword }) {
                         value={data.password}
                         className="mt-1 block w-full"
                         autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
+                        onChange={handleChange}
                     />
 
                     <InputError message={errors.password} className="mt-2" />
@@ -70,7 +99,7 @@ export default function Login({ status, canResetPassword }) {
                         <Checkbox
                             name="remember"
                             checked={data.remember}
-                            onChange={(e) => setData('remember', e.target.checked)}
+                            onChange={handleChange}
                         />
                         <span className="ms-2 text-sm text-gray-600">Remember me</span>
                     </label>

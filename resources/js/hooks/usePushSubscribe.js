@@ -17,15 +17,14 @@ export async function subscribeUser() {
   }
 
   try {
+        // Dapatkan CSRF cookie dari Laravel Sanctum (wajib sebelum POST)
+    await axios.get('/sanctum/csrf-cookie');
     const registration = await navigator.serviceWorker.ready;
 
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
-
-    // Dapatkan CSRF cookie dari Laravel Sanctum (wajib sebelum POST)
-    await axios.get('/sanctum/csrf-cookie');
 
     // Kirim data subscription ke server
     const res = await axios.post('/api/push-subscribe', {
