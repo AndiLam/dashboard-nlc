@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('alarm_schedules', function (Blueprint $table) {
+        Schema::create('log_deteksi', function (Blueprint $table) {
             $table->id();
-            $table->time('start_time');   // waktu mulai aktif
-            $table->time('end_time');     // waktu nonaktif
-            $table->boolean('is_active')->default(true); // untuk aktif/nonaktif jadwal
+            $table->string('nama');
+            $table->enum('status', ['Dikenal', 'Tidak Dikenal']);
+            $table->timestamp('waktu');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('alarm_schedules');
+        Schema::dropIfExists('log_deteksi');
     }
 };

@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
+import axios from 'axios';
 
 export default function LogDeteksi() {
-  // data log dummy
-  const logs = [
-    { id: 1, nama: 'Tidak dikenal', waktu: '2025-07-26 13:45', status: 'Tidak Dikenal' },
-    { id: 2, nama: 'Agus', waktu: '2025-07-26 13:40', status: 'Dikenal' },
-    { id: 3, nama: 'Tidak dikenal', waktu: '2025-07-26 13:30', status: 'Tidak Dikenal' },
-  ];
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    axios.get('/api/log-deteksi').then(res => setLogs(res.data));
+  }, []);
 
   return (
     <AdminLayout>
@@ -28,7 +28,7 @@ export default function LogDeteksi() {
               <tr key={log.id}>
                 <td className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">{log.nama}</td>
-                <td className="px-4 py-2">{log.waktu}</td>
+                <td className="px-4 py-2">{new Date(log.waktu).toLocaleString()}</td>
                 <td className="px-4 py-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -45,10 +45,6 @@ export default function LogDeteksi() {
           </tbody>
         </table>
       </div>
-
-      <p className="text-gray-500 mt-4 text-sm">
-        Data log diambil dari sistem deteksi secara real-time.
-      </p>
     </AdminLayout>
   );
 }

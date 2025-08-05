@@ -2,30 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\LogDeteksi;
-use App\Helpers\PushNotification;
+use Illuminate\Support\Facades\Http;
+use App\Models\JadwalAlarmLog;
 
 class Esp32TriggerController extends Controller
 {
-    public function store(Request $request)
+    protected $baseUrl;
+
+    public function __construct()
+    {
+        $this->baseUrl = config('app.local_esp32_url');
+    }
+
+    public function status()
+    {
+        try {
+            $response = Http::timeout(3)->get(config('app.local_esp32_url') . '/status');
+            return response()->json($response->json());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'ESP32 tidak terhubung'], 500);
+        }
+    }
+
+    public function turnOn()
+    {
+        try {
+            return Http::timeout(2)->get($this->baseUrl . '/alarm/on');
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal menghidupkan alarm'], 500);
+        }
+    }
+
+    public function turnOff()
+    {
+        try {
+            return Http::timeout(2)->get($this->baseUrl . '/alarm/off');
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal mematikan alarm'], 500);
+        }
+    }
+
+    public function stopSound()
+    {
+        try {
+            return Http::timeout(2)->get($this->baseUrl . '/alarm/stop-sound');
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal menghentikan suara alarm'], 500);
+        }
+    }
+
+    public function setSchedule(Request $request)
     {
         $request->validate([
-            'waktu' => 'required|date',
+            'time_on' => 'required|date_format:H:i',
+            'time_off' => 'required|date_format:H:i',
         ]);
 
-        $log = LogDeteksi::create([
-            'nama' => null,
-            'tipe' => 'unknown',
-            'waktu' => $request->waktu,
-            'sumber' => 'esp32',
-        ]);
+        // Bandingkan jam
+        $timeOn = strtotime($request->time_on);
+        $timeOff = strtotime($request->time_off);
 
-        // Kirim push notif
-        PushNotification::send('Deteksi Tidak Dikenal!', 'Wajah tidak dikenal terdeteksi!');
+        if ($timeOn >= $timeOff) {
+            return response()->json([
+                'error' => 'Waktu aktif (time_on) harus lebih awal dari waktu nonaktif (time_off).'
+            ], 422);
+        }
 
+        try {
+            $response = Http::timeout(2)->post($this->baseUrl . '/alarm/schedule', [
+                'on' => $request->time_on,
+                'off' => $request->time_off,
+            ]);
 
-        return response()->json(['success' => true, 'data' => $log]);
+            if ($response->successful()) {
+                // Simpan ke log jadwal
+                JadwalAlarmLog::create([
+                    'waktu_on' => $request->time_on,
+                    'waktu_off' => $request->time_off,
+                ]);
+            }
+
+            return $response;
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Gagal mengatur jadwal alarm'], 500);
+        }
     }
 }

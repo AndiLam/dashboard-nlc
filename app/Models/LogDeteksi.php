@@ -8,10 +8,11 @@ class LogDeteksi extends Model
 {
     protected $fillable = [
         'nama',
-        'tipe',     // known | unknown
+        'status',
         'waktu',
-        'sumber',   // komputasi | esp32
     ];
 
-    public $timestamps = false;
+    public $timestamps = true;
+
+    protected $table = 'log_deteksi';
 }
