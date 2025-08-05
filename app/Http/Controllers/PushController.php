@@ -46,4 +46,11 @@ class PushController extends Controller
 
         return response()->json(['message' => 'Notifikasi dikirim.']);
     }
+
+    public function count()
+    {
+        $count = \App\Models\AlarmTriggerLog ::count(); // Ganti dengan model yang sesuai
+        return response()->json(['total' => $count]);
+    }
+
 }

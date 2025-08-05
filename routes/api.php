@@ -11,6 +11,7 @@ use App\Http\Controllers\PushController;
 Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/push-subscribe', [PushController::class, 'subscribe']);
     Route::post('/push-send', [PushController::class, 'send']);
+    Route::get('/push-count', [PushController::class, 'count']);
 });
 
 
