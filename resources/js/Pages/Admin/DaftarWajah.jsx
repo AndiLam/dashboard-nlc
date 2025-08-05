@@ -2,17 +2,15 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import axios from 'axios';
 
-useEffect(() => {
-  const fetchCSRF = async () => {
-    await axios.get("/sanctum/csrf-cookie", { withCredentials: true });
-  };
-  fetchCSRF();
-}, []);
-
-
 import { PencilIcon, Trash2Icon, PlusCircle } from 'lucide-react';
 
 export default function DaftarWajah() {
+  useEffect(() => {
+    const fetchCSRF = async () => {
+      await axios.get("/sanctum/csrf-cookie", { withCredentials: true });
+    };
+    fetchCSRF();
+  }, []);
   const [wajahDikenal, setWajahDikenal] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);

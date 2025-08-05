@@ -1,12 +1,5 @@
 import { useEffect } from 'react';
 import axios from 'axios';
-useEffect(() => {
-  const fetchCSRF = async () => {
-    await axios.get("/sanctum/csrf-cookie", { withCredentials: true });
-  };
-  fetchCSRF();
-}, []);
-
 
 const publicKey = import.meta.env.VITE_PUSH_PUBLIC_KEY;
 
@@ -17,8 +10,14 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
-export async function subscribeUser(subscription) {
+export async function subscribeUser() {
   try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
+    });
+
     await axios.get('/sanctum/csrf-cookie'); // Penting sebelum POST
 
     const res = await axios.post('/api/push-subscribe', {
