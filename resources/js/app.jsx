@@ -29,9 +29,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/custom-sw.js')
       .then(reg => {
         console.log('SW registered:', reg);
-        import('./hooks/usePushSubscribe').then(mod => {
-          mod.subscribeUser();
-        });
       })
       .catch(err => {
         console.error('SW registration failed:', err);

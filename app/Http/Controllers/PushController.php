@@ -18,9 +18,21 @@ class PushController extends Controller
             'keys.p256dh' => 'required|string',
         ]);
 
-        // Di sini bisa simpan data ke tabel push_subscriptions jika diimplementasikan
+        $user = $request->user(); 
 
-        return response()->json(['message' => 'Push subscription simulated saved.']);
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Simpan subscription via trait HasPushSubscriptions
+        $user->updatePushSubscription(
+            $request->endpoint,
+            $request->keys['p256dh'],
+            $request->keys['auth'],
+            $request->header('Content-Encoding', 'aes128gcm') // default content encoding
+        );
+
+        return response()->json(['message' => 'Push subscription saved']);
     }
 
     public function send(Request $request)

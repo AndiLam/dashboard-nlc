@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import axios from 'axios';
 
+useEffect(() => {
+  const fetchCSRF = async () => {
+    await axios.get("/sanctum/csrf-cookie", { withCredentials: true });
+  };
+  fetchCSRF();
+}, []);
+
+
 export default function Alarm() {
   const [alarmStatus, setAlarmStatus] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,6 +62,7 @@ export default function Alarm() {
 
     try {
       await axios.post(`${ESP32_BASE_URL}/alarm/schedule`, {
+        withCredentials: true,
         time_on: schedule.on,
         time_off: schedule.off,
       });

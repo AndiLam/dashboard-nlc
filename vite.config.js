@@ -4,15 +4,33 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
+  
   const env = loadEnv(mode, process.cwd());
 
   return {
+  server: {
+    host: 'focfarm.id',
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'https://focfarm.id',
+        changeOrigin: true,
+        secure: false,
+      },
+      '^/sanctum/csrf-cookie': {
+        target: 'https://focfarm.id',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
     base: '/build/',
     plugins: [
       laravel({
         input: ['resources/js/app.jsx'],
         refresh: true,
       }),
+      
       react(),
       VitePWA({
         base: '/build/',

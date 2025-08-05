@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import axios from 'axios';
+
+useEffect(() => {
+  const fetchCSRF = async () => {
+    await axios.get("/sanctum/csrf-cookie", { withCredentials: true });
+  };
+  fetchCSRF();
+}, []);
+
+
 import { PencilIcon, Trash2Icon, PlusCircle } from 'lucide-react';
 
 export default function DaftarWajah() {
@@ -64,10 +73,12 @@ export default function DaftarWajah() {
     try {
       if (editingId) {
         await axios.post(`/api/wajah-dikenal/${editingId}?_method=PUT`, formData, {
+          withCredentials: true,
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
         await axios.post('/api/wajah-dikenal', formData, {
+          withCredentials: true,
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }

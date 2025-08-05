@@ -1,4 +1,12 @@
+import { useEffect } from 'react';
 import axios from 'axios';
+useEffect(() => {
+  const fetchCSRF = async () => {
+    await axios.get("/sanctum/csrf-cookie", { withCredentials: true });
+  };
+  fetchCSRF();
+}, []);
+
 
 const publicKey = import.meta.env.VITE_PUSH_PUBLIC_KEY;
 
@@ -9,27 +17,20 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
-export async function subscribeUser() {
-  if ('serviceWorker' in navigator) {
-    try {
-      const registration = await navigator.serviceWorker.ready;
+export async function subscribeUser(subscription) {
+  try {
+    await axios.get('/sanctum/csrf-cookie'); // Penting sebelum POST
 
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
-      });
+    const res = await axios.post('/api/push-subscribe', {
+      endpoint: subscription.endpoint,
+      keys: {
+        auth: subscription.keys.auth,
+        p256dh: subscription.keys.p256dh,
+      },
+    });
 
-      await axios.post(
-        '/api/push-subscribe',
-        subscription,
-        {
-          withCredentials: true, // ⬅️ penting agar session Laravel dikenali
-        }
-      );
-
-      console.log('✅ Push subscription successful');
-    } catch (error) {
-      console.error('❌ Push subscription failed:', error);
-    }
+    console.log('✅ Push subscription successful:', res.data);
+  } catch (error) {
+    console.error('❌ Push subscription failed:', error);
   }
 }
