@@ -11,20 +11,28 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 export async function subscribeUser() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.warn('❌ Push notification not supported in this browser');
+    return;
+  }
+
   try {
     const registration = await navigator.serviceWorker.ready;
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
 
-    await axios.get('/sanctum/csrf-cookie'); // Penting sebelum POST
+    // Dapatkan CSRF cookie dari Laravel Sanctum (wajib sebelum POST)
+    await axios.get('/sanctum/csrf-cookie');
 
+    // Kirim data subscription ke server
     const res = await axios.post('/api/push-subscribe', {
       endpoint: subscription.endpoint,
       keys: {
-        auth: subscription.keys.auth,
-        p256dh: subscription.keys.p256dh,
+        auth: subscription.toJSON().keys.auth,
+        p256dh: subscription.toJSON().keys.p256dh,
       },
     });
 

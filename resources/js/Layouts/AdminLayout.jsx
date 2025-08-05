@@ -3,15 +3,15 @@ import React, { useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import { subscribeUser } from '@/hooks/usePushSubscribe';
 
-
 export default function AdminLayout({ children }) {
   const { props } = usePage();
 
   useEffect(() => {
-    if (props.auth?.user) {
+    if (props?.auth?.user) {
       subscribeUser();
     }
-  }, [props.auth?.user]);
+  }, [props?.auth?.user]);
+
   return (
     <div className="flex">
       <Sidebar />
