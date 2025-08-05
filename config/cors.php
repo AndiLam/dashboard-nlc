@@ -3,7 +3,7 @@
 return [
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['https://focfarm.id'],
+    'allowed_origins' => ['https://focfarm.id', 'https://www.focfarm.id'],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,

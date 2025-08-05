@@ -1,6 +1,6 @@
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'https://focfarm.id';
+axios.defaults.baseURL = import.meta.env.VITE_APP_URL || 'https://focfarm.id';
 
 
 window.axios = axios;
