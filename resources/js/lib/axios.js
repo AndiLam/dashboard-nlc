@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_APP_URL || 'https://focfarm.id',
+  baseURL: 'https://focfarm.id',
   withCredentials: true,
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
