@@ -17,26 +17,35 @@ export async function subscribeUser() {
   }
 
   try {
-        // Dapatkan CSRF cookie dari Laravel Sanctum (wajib sebelum POST)
+    console.log('📡 Requesting CSRF cookie...');
     await axios.get('/sanctum/csrf-cookie');
+    console.log('✅ CSRF cookie set.');
+
     const registration = await navigator.serviceWorker.ready;
+    console.log('🔧 Service Worker ready:', registration);
 
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
+    console.log('📬 Push subscription object created:', subscription.toJSON());
 
-    // Kirim data subscription ke server
-    const res = await axios.post('/api/push-subscribe', {
+    const payload = {
       endpoint: subscription.endpoint,
       keys: {
         auth: subscription.toJSON().keys.auth,
         p256dh: subscription.toJSON().keys.p256dh,
       },
-    });
+    };
+
+    console.log('📤 Sending subscription to server:', payload);
+    const res = await axios.post('/api/push-subscribe', payload);
 
     console.log('✅ Push subscription successful:', res.data);
   } catch (error) {
     console.error('❌ Push subscription failed:', error);
+    if (error.response) {
+      console.error('📥 Server response:', error.response.data);
+    }
   }
 }

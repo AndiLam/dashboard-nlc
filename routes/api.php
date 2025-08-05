@@ -7,7 +7,7 @@ use App\Http\Controllers\LogDeteksiController;
 use App\Http\Controllers\Esp32TriggerController;
 use App\Http\Controllers\PushController;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/push-subscribe', [PushController::class, 'subscribe']);
     Route::post('/push-send', [PushController::class, 'send']);
 });
