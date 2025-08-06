@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
 
   return {
   server: {
-    host: 'focfarm.id',
+    host: 'true',
     port: 5173,
     proxy: {
       '/api': {
