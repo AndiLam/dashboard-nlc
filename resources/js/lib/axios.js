@@ -1,11 +1,8 @@
-import axios from 'axios';
+import axios from '@/lib/axios';
 
-const instance = axios.create({
-  baseURL: 'https://focfarm.id',
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_APP_URL, // => akan dibaca dari .env
   withCredentials: true,
-  headers: {
-    'X-Requested-With': 'XMLHttpRequest',
-  },
 });
 
-export default instance;
+export default axiosInstance;

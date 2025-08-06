@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import axios from 'axios';
+import axios from '@/lib/axios';
 
 const publicKey = import.meta.env.VITE_PUSH_PUBLIC_KEY;
 

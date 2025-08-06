@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import axios from 'axios';
+import axios from '@/lib/axios';
 
 export default function Dashboard() {
   const [totalWajah, setTotalWajah] = useState(0);

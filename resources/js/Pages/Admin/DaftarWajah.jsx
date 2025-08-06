@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import axios from 'axios';
+import axios from '@/lib/axios';
 
 import { PencilIcon, Trash2Icon, PlusCircle } from 'lucide-react';
 
