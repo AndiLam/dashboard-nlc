@@ -9,16 +9,16 @@ export default defineConfig(({ mode }) => {
 
   return {
   server: {
-    host: 'true',
+    host: true,
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://focfarm.id',
+      target: env.VITE_APP_URL,
         changeOrigin: true,
         secure: false,
       },
       '^/sanctum/csrf-cookie': {
-        target: 'https://focfarm.id',
+        target: env.VITE_APP_URL,
         changeOrigin: true,
         secure: false,
       },
