@@ -9,15 +9,26 @@ use Illuminate\Support\Facades\Log;
 
 class MqttService
 {
-    protected $server = '393f23b123494ba7993b86b9cfc4ae97.s1.eu.hivemq.cloud';
-    protected $port = 8883;
-    protected $username = 'NLCFarm_Alarm';
-    protected $password = 'MariAman24!';
+    protected $server;
+    protected $port;
+    protected $username;
+    protected $password;
+    protected $useTls;
+    protected $topic;
+
+    public function __construct()
+    {
+        $this->server = config('mqtt.server');
+        $this->port = config('mqtt.port');
+        $this->username = config('mqtt.username');
+        $this->password = config('mqtt.password');
+        $this->useTls = config('mqtt.use_tls');
+        $this->topic = config('mqtt.topic_control');
+    }
 
     public function publishControlMessage(string $message)
     {
         $clientId = 'laravel-backend-client-' . uniqid();
-        $topic = 'focfarm/alarm/control';
 
         try {
             $mqtt = new MqttClient($this->server, $this->port, $clientId);
@@ -25,13 +36,19 @@ class MqttService
             $connectionSettings = (new ConnectionSettings)
                 ->setUsername($this->username)
                 ->setPassword($this->password)
-                ->setUseTls(true);
+                ->setUseTls($this->useTls);
 
             $mqtt->connect($connectionSettings, true);
-            $mqtt->publish($topic, $message, 0);
+            Log::info("MQTT connected to {$this->server}:{$this->port}");
+
+            $mqtt->publish($this->topic, $message, 0);
+            Log::info("MQTT message published to topic {$this->topic}: {$message}");
+
             $mqtt->disconnect();
+            Log::info("MQTT disconnected");
         } catch (MqttClientException $e) {
             Log::error('MQTT publish error: ' . $e->getMessage());
+            throw $e;
         }
     }
 }
