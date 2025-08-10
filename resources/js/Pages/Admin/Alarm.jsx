@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import axios from 'axios';
+import useMqtt from '@/hooks/useMqtt';
 
 export default function Alarm() {
-  const [alarmStatus, setAlarmStatus] = useState(false);
   const [loading, setLoading] = useState(false);
   const [schedule, setSchedule] = useState({ on: '', off: '' });
-  const [espConnected, setEspConnected] = useState(false);
-  const [isAlarmTriggered, setIsAlarmTriggered] = useState(false);
   const [jadwalLog, setJadwalLog] = useState([]);
   const [triggerLog, setTriggerLog] = useState([]);
   const [statusLoading, setStatusLoading] = useState(false);
 
-  const ESP32_BASE_URL = '/api/esp32';
+  // MQTT hook
+  const { isConnected: espConnected, status, publishControl } = useMqtt();
 
+  // Ambil log dari Laravel API (tetap via axios)
   useEffect(() => {
     axios.get('/sanctum/csrf-cookie');
     fetchLogs();
@@ -32,59 +32,37 @@ export default function Alarm() {
     }
   };
 
-  useEffect(() => {
-    const fetchStatus = async () => {
-      setStatusLoading(true);
-      try {
-        const res = await axios.get(`${ESP32_BASE_URL}/status`);
-        setEspConnected(true);
-        setAlarmStatus(res.data.alarm_active);
-        setIsAlarmTriggered(res.data.alarm_triggered);
-      } catch {
-        setEspConnected(false);
-      } finally {
-        setStatusLoading(false);
-      }
-    };
-
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
   const toggleAlarm = async () => {
+    if (!espConnected) return alert('ESP32 tidak terhubung');
+
     setLoading(true);
     try {
-      const endpoint = alarmStatus ? 'off' : 'on';
-      await axios.get(`${ESP32_BASE_URL}/alarm/${endpoint}`);
-      setAlarmStatus(!alarmStatus);
-    } catch {
-      alert('Gagal menghubungi ESP32.');
+      const action = status?.active ? 'off' : 'on';
+      publishControl(action);
+      // status akan update via MQTT otomatis
+    } catch (error) {
+      alert('Gagal mengirim perintah ke ESP32.');
     } finally {
       setLoading(false);
     }
   };
 
-  const stopAlarmSound = async () => {
-    try {
-      await axios.get(`${ESP32_BASE_URL}/alarm/stop-sound`);
-      alert('Suara alarm dimatikan.');
-      fetchLogs();
-    } catch {
-      alert('Gagal mematikan alarm.');
-    }
+  const stopAlarmSound = () => {
+    if (!espConnected) return alert('ESP32 tidak terhubung');
+    publishControl('stop-sound');
   };
 
   const handleScheduleChange = (e) => {
     setSchedule({ ...schedule, [e.target.name]: e.target.value });
   };
 
+  // Kirim jadwal ke ESP32 via HTTP (karena di kode kamu ada endpoint Laravel ke ESP32)
   const submitSchedule = async (e) => {
     e.preventDefault();
     if (!schedule.on || !schedule.off) return alert('Lengkapi waktu alarm.');
 
     try {
-      await axios.post(`${ESP32_BASE_URL}/alarm/schedule`, {
+      await axios.post('/api/esp32/alarm/schedule', {
         time_on: schedule.on,
         time_off: schedule.off,
       });
@@ -113,19 +91,19 @@ export default function Alarm() {
             </div>
             <div>
               <span className="font-medium">Status Alarm:</span>{' '}
-              <span className={`font-semibold ${alarmStatus ? 'text-red-600' : 'text-gray-500'}`}>
-                {alarmStatus ? 'Aktif' : 'Nonaktif'}
+              <span className={`font-semibold ${status?.active ? 'text-red-600' : 'text-gray-500'}`}>
+                {status?.active ? 'Aktif' : 'Nonaktif'}
               </span>
             </div>
             <div>
               <span className="font-medium">Alarm Berbunyi:</span>{' '}
-              <span className={`font-semibold ${isAlarmTriggered ? 'text-red-600' : 'text-gray-500'}`}>
-                {isAlarmTriggered ? 'Ya' : 'Tidak'}
+              <span className={`font-semibold ${status?.triggered ? 'text-red-600' : 'text-gray-500'}`}>
+                {status?.triggered ? 'Ya' : 'Tidak'}
               </span>
             </div>
           </div>
 
-          {isAlarmTriggered && (
+          {status?.triggered && (
             <div className="mt-4 p-4 bg-red-100 border border-red-300 rounded-md">
               <p className="mb-2 font-semibold text-red-700">Alarm sedang berbunyi!</p>
               <button
@@ -145,10 +123,10 @@ export default function Alarm() {
             onClick={toggleAlarm}
             disabled={loading || !espConnected}
             className={`w-full py-2 rounded text-white font-semibold transition 
-              ${alarmStatus ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} 
+              ${status?.active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} 
               ${loading || !espConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {loading ? 'Memproses...' : alarmStatus ? 'Matikan Alarm' : 'Aktifkan Alarm'}
+            {loading ? 'Memproses...' : status?.active ? 'Matikan Alarm' : 'Aktifkan Alarm'}
           </button>
         </div>
       </div>
