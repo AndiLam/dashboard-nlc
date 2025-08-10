@@ -38,3 +38,5 @@ Route::prefix('esp32')->group(function () {
 Route::get('/jadwal-log', [AlarmController::class, 'jadwalLog']);
 Route::get('/alarm-trigger-log', [AlarmController::class, 'triggerLog']);
 Route::post('/alarm-trigger-log', [AlarmController::class, 'storeTriggerLog']);
+Route::post('/alarm/send-command', [AlarmController::class, 'sendCommand']);
+
