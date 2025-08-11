@@ -17,12 +17,18 @@ class UploadHLSController extends Controller
         $file = $request->file('file');
         $filename = $request->input('filename');
 
-        // Simpan file ke storage/public/stream
-        $path = $file->storeAs('public/stream', $filename);
+        // path ke folder public_html/stream (satu level di atas public)
+        $destinationPath = public_path('../stream');
+
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+
+        $file->move($destinationPath, $filename);
 
         return response()->json([
-            'message' => 'File berhasil diupload',
-            'path' => $path,
+            'message' => 'File berhasil diupload ke public_html/stream',
+            'path' => 'stream/' . $filename,
         ]);
     }
 }
