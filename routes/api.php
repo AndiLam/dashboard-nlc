@@ -7,6 +7,8 @@ use App\Http\Controllers\DeteksiController;
 use App\Http\Controllers\Esp32TriggerController;
 use App\Http\Controllers\AlarmController;
 use App\Http\Controllers\PushController;
+use App\Http\Controllers\UploadHLSController;
+
 
 Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/push-subscribe', [PushController::class, 'subscribe']);
@@ -35,3 +37,5 @@ Route::prefix('esp32')->group(function () {
 Route::get('/log-alarm', [AlarmController::class, 'triggerLog']);
 Route::post('/log-alarm', [AlarmController::class, 'storeTriggerLog']);
 
+
+Route::post('/upload-hls', [UploadHLSController::class, 'upload']);
