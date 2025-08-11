@@ -1,19 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Hls from 'hls.js';
-import { Play, Pause, Maximize } from 'lucide-react';
 
 export default function Streaming() {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const hlsRef = React.useRef(null);
 
   useEffect(() => {
     if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource('/stream/playlist.m3u8');
-      hls.attachMedia(videoRef.current);
+      hlsRef.current = new Hls();
+
+      // Tambah query string timestamp supaya tidak cache
+      const playlistUrl = `/stream/playlist.m3u8?ts=${Date.now()}`;
+      hlsRef.current.loadSource(playlistUrl);
+      hlsRef.current.attachMedia(videoRef.current);
+
+      // Reload playlist secara berkala setiap 3 detik
+      const interval = setInterval(() => {
+        const newUrl = `/stream/playlist.m3u8?ts=${Date.now()}`;
+        hlsRef.current.loadSource(newUrl);
+      }, 3000);
+
+      return () => {
+        clearInterval(interval);
+        if (hlsRef.current) {
+          hlsRef.current.destroy();
+        }
+      };
     } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-      videoRef.current.src = '/stream/playlist.m3u8';
+      // Untuk Safari
+      videoRef.current.src = `/stream/playlist.m3u8?ts=${Date.now()}`;
     }
   }, []);
 
@@ -56,13 +73,13 @@ export default function Streaming() {
               onClick={togglePlay}
               className="text-white hover:text-gray-300"
             >
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+              {isPlaying ? "Pause" : "Play"}
             </button>
             <button
               onClick={toggleFullscreen}
               className="text-white hover:text-gray-300"
             >
-              <Maximize size={20} />
+              Fullscreen
             </button>
           </div>
         </div>
