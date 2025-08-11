@@ -15,19 +15,19 @@ export default function AdminLayout({ children }) {
   }, [props?.auth?.user]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out 
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0 md:static md:shadow-none h-screen flex-shrink-0`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0 md:static md:shadow-none flex-shrink-0`}
       >
         <Sidebar closeSidebar={() => setSidebarOpen(false)} />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Topbar */}
+      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        {/* Topbar (Mobile) */}
         <header className="bg-white shadow-md p-4 flex items-center md:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -38,7 +38,8 @@ export default function AdminLayout({ children }) {
           <h1 className="ml-4 font-bold text-lg">Admin Panel</h1>
         </header>
 
-        <main className="flex-1 p-4 md:p-6">
+        {/* Content Scroll Area */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>
       </div>
@@ -46,7 +47,7 @@ export default function AdminLayout({ children }) {
       {/* Overlay Mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 md:hidden animate-fadeIn"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}

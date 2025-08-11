@@ -53,7 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-    'local_esp32_url' => env('LOCAL_ESP32_URL', 'http://192.168.10.1'),
+    'local_esp32_url' => env('LOCAL_ESP32_URL', 'http://192.168.1.11'),
 
     /*
     |--------------------------------------------------------------------------

@@ -9,8 +9,10 @@ return new class extends Migration {
     {
         Schema::create('alarm_trigger_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('sumber_trigger')->nullable(); // misalnya "deteksi wajah" atau "manual"
-            $table->timestamps();
+            $table->string('sumber_trigger')->nullable();
+            $table->string('pesan')->nullable(); // Deskripsi atau pesan alarm
+            $table->enum('status', ['ON', 'OFF'])->default('ON'); // Status alarm saat log dicatat
+            $table->timestamps(); // created_at = waktu trigger, updated_at jarang dipakai
         });
     }
 

@@ -27,7 +27,6 @@ export default function Dashboard() {
         axios.get('/api/wajah-dikenal'),                      // get all wajah dikenal
         axios.get('/api/log-deteksi?today=1'),                // log deteksi hari ini
         axios.get('/api/push-count'),                         // jumlah notifikasi (buat route ini)
-        axios.get('/api/esp32/status'),                       // status alarm dari esp32
         axios.get('/api/log-deteksi?limit=3'),                // aktivitas terbaru
         axios.get('/api/stream-status'),                      // status streaming (buat route dummy sementara)
       ]);
@@ -66,13 +65,6 @@ export default function Dashboard() {
         <div className="bg-white shadow-md rounded-lg p-4">
           <h2 className="text-sm font-medium mb-1">Status Streaming</h2>
           <p className="text-2xl font-bold text-gray-500">{streamingStatus}</p>
-        </div>
-
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-sm font-medium mb-1">Status Alarm</h2>
-          <p className={`text-2xl font-bold ${alarmStatus ? 'text-red-600' : 'text-gray-500'}`}>
-            {alarmStatus ? 'Aktif' : 'Nonaktif'}
-          </p>
         </div>
       </div>
 

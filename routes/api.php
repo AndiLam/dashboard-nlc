@@ -28,15 +28,10 @@ Route::get('/log-deteksi', [DeteksiController::class, 'index']);
 use Illuminate\Support\Facades\Http;
 
 Route::prefix('esp32')->group(function () {
-    Route::get('/status', [Esp32TriggerController::class, 'status']);
     Route::get('/alarm/on', [Esp32TriggerController::class, 'turnOn']);
     Route::get('/alarm/off', [Esp32TriggerController::class, 'turnOff']);
-    Route::get('/alarm/stop-sound', [Esp32TriggerController::class, 'stopSound']);
-    Route::post('/alarm/schedule', [Esp32TriggerController::class, 'setSchedule']);
 });
 
-Route::get('/jadwal-log', [AlarmController::class, 'jadwalLog']);
-Route::get('/alarm-trigger-log', [AlarmController::class, 'triggerLog']);
-Route::post('/alarm-trigger-log', [AlarmController::class, 'storeTriggerLog']);
-Route::post('/alarm/send-command', [AlarmController::class, 'sendCommand']);
+Route::get('/log-alarm', [AlarmController::class, 'triggerLog']);
+Route::post('/log-alarm', [AlarmController::class, 'storeTriggerLog']);
 
