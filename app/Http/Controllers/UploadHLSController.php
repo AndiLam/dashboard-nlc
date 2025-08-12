@@ -42,21 +42,32 @@ class UploadHLSController extends Controller
 
     private function cleanupOldSegments($latestFilename)
     {
-        // Hanya hapus file .ts kecuali file yang baru saja diupload
+        // Ambil semua file .ts
         $files = File::files($this->streamFolder);
 
-        foreach ($files as $file) {
-            $name = $file->getFilename();
+        // Filter hanya file .ts
+        $segments = array_filter($files, function ($file) {
+            return preg_match('/\.ts$/', $file->getFilename());
+        });
 
-            // Jangan hapus playlist dan file terbaru yang sedang diupload
-            if ($name === 'playlist.m3u8' || $name === $latestFilename) {
-                continue;
-            }
+        // Urutkan berdasarkan nama (segment_001.ts, segment_002.ts, dst)
+        usort($segments, function ($a, $b) {
+            return strcmp($a->getFilename(), $b->getFilename());
+        });
 
-            // Hapus file segment .ts lama
-            if (preg_match('/\.ts$/', $name)) {
-                // Bisa juga pakai pengecekan timestamp jika mau lebih spesifik
-                File::delete($file->getRealPath());
+        // Tentukan jumlah segmen yang mau disisakan
+        $keepCount = 5;
+        $totalSegments = count($segments);
+
+        // Jika jumlah segmen melebihi batas, hapus yang lama
+        if ($totalSegments > $keepCount) {
+            $segmentsToDelete = array_slice($segments, 0, $totalSegments - $keepCount);
+
+            foreach ($segmentsToDelete as $file) {
+                // Pastikan bukan file yang baru saja diupload
+                if ($file->getFilename() !== $latestFilename) {
+                    File::delete($file->getRealPath());
+                }
             }
         }
     }
