@@ -18,7 +18,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
 Route::get('/push-count', [PushController::class, 'count']);
 Route::get('/stream-status', function () {
-    $playlistPath = base_path('../stream/playlist.m3u8'); // Sesuaikan
+    $playlistPath = base_path('/stream/playlist.m3u8');
 
     if (File::exists($playlistPath)) {
         $lastModified = File::lastModified($playlistPath);
