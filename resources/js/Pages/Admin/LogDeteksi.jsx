@@ -9,8 +9,15 @@ export default function LogDeteksi() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    axios.get('/api/log-deteksi').then(res => setLogs(res.data));
+    axios.get('/api/log-deteksi').then(res => {
+      if (Array.isArray(res.data.data)) {
+        setLogs(res.data.data);
+      } else {
+        setLogs([]);
+      }
+    });
   }, []);
+
 
   // Filter logs berdasarkan searchTerm
   const filteredLogs = logs.filter(log =>
