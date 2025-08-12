@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 use App\Http\Controllers\WajahDikenalController;
 use App\Http\Controllers\DeteksiController;
 use App\Http\Controllers\Esp32TriggerController;
@@ -13,9 +14,22 @@ use App\Http\Controllers\UploadHLSController;
 Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/push-subscribe', [PushController::class, 'subscribe']);
     Route::post('/push-send', [PushController::class, 'send']);
-    Route::get('/push-count', [PushController::class, 'count']);
 });
 
+Route::get('/push-count', [PushController::class, 'count']);
+Route::get('/stream-status', function () {
+    $playlistPath = public_path('stream/playlist.m3u8');
+
+    if (File::exists($playlistPath)) {
+        $lastModified = File::lastModified($playlistPath);
+
+        if (time() - $lastModified <= 5) {
+            return response()->json(['status' => 'Online']);
+        }
+    }
+
+    return response()->json(['status' => 'Offline']);
+});
 
 // Endpoint untuk manajemen wajah dikenal
 Route::get('/wajah-dikenal', [WajahDikenalController::class, 'index']);

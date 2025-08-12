@@ -7,7 +7,6 @@ export default function Dashboard() {
   const [logHariIni, setLogHariIni] = useState(0);
   const [jumlahNotif, setJumlahNotif] = useState(0);
   const [streamingStatus, setStreamingStatus] = useState('Offline');
-  const [alarmStatus, setAlarmStatus] = useState(false);
   const [aktivitas, setAktivitas] = useState([]);
 
   useEffect(() => {
@@ -16,29 +15,21 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [
-        wajahRes,
-        logHariIniRes,
-        notifRes,
-        alarmRes,
-        logDeteksiRes,
-        streamingRes,
-      ] = await Promise.all([
-        axios.get('/api/wajah-dikenal'),                      // get all wajah dikenal
-        axios.get('/api/log-deteksi?today=1'),                // log deteksi hari ini
-        axios.get('/api/push-count'),                         // jumlah notifikasi (buat route ini)
-        axios.get('/api/log-deteksi?limit=3'),                // aktivitas terbaru
-        axios.get('/api/stream-status'),                      // status streaming (buat route dummy sementara)
+      const results = await Promise.allSettled([
+        axios.get('/api/wajah-dikenal'),             // [0]
+        axios.get('/api/log-deteksi?today=1'),       // [1]
+        axios.get('/api/push-count'),                // [2]
+        axios.get('/api/log-deteksi?limit=3'),       // [3]
+        axios.get('/api/stream-status'),             // [4]
       ]);
 
-      setTotalWajah(wajahRes.data.length || 0);
-      setLogHariIni(logHariIniRes.data.total || 0);
-      setJumlahNotif(notifRes.data.total || 0);
-      setAlarmStatus(alarmRes.data.alarm_active);
-      setAktivitas(logDeteksiRes.data || []);
-      setStreamingStatus(streamingRes.data.status || 'Offline');
+      setTotalWajah(results[0].status === 'fulfilled' ? results[0].value.data.length || 0 : 0);
+      setLogHariIni(results[1].status === 'fulfilled' ? results[1].value.data.total || 0 : 0);
+      setJumlahNotif(results[2].status === 'fulfilled' ? results[2].value.data.total || 0 : 0);
+      setAktivitas(results[3].status === 'fulfilled' ? results[4].value.data || [] : []);
+      setStreamingStatus(results[4].status === 'fulfilled' ? results[5].value.data.status || 'Offline' : 'Offline');
     } catch (error) {
-      console.error('Gagal mengambil data dashboard:', error);
+      console.error('Error memuat data dashboard:', error);
     }
   };
 
@@ -80,6 +71,10 @@ export default function Dashboard() {
               )}
             </li>
           ))}
+
+          {aktivitas.length === 0 && (
+            <li className="text-gray-500">Tidak ada aktivitas terbaru</li>
+          )}
         </ul>
       </div>
     </AdminLayout>
