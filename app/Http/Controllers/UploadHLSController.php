@@ -55,8 +55,7 @@ class UploadHLSController extends Controller
             return strcmp($a->getFilename(), $b->getFilename());
         });
 
-        // Tentukan jumlah segmen yang mau disisakan
-        $keepCount = 5;
+        $keepCount = 15;
         $totalSegments = count($segments);
 
         // Jika jumlah segmen melebihi batas, hapus yang lama
