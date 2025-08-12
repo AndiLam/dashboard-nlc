@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Hls from 'hls.js';
-import { Maximize } from 'lucide-react';
+import { Maximize, Minimize } from 'lucide-react';
 
 export default function Streaming() {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isOnline, setIsOnline] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     let hls;
@@ -31,18 +32,44 @@ export default function Streaming() {
       videoRef.current.addEventListener('error', () => setIsOnline(false));
     }
 
+    // Detect fullscreen change
+    const handleFullscreenChange = () => {
+      const fsElement =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement;
+      setIsFullscreen(!!fsElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
     return () => {
       if (hls) hls.destroy();
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('msfullscreenchange', handleFullscreenChange);
     };
   }, []);
 
-  const toggleFullscreen = () => {
+  const enterFullscreen = () => {
     if (containerRef.current.requestFullscreen) {
       containerRef.current.requestFullscreen();
     } else if (containerRef.current.webkitRequestFullscreen) {
       containerRef.current.webkitRequestFullscreen();
     } else if (containerRef.current.msRequestFullscreen) {
       containerRef.current.msRequestFullscreen();
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
     }
   };
 
@@ -75,13 +102,13 @@ export default function Streaming() {
             LIVE
           </div>
 
-          {/* Fullscreen Button */}
+          {/* Fullscreen / Exit Fullscreen Button */}
           <div className="absolute bottom-2 right-2 bg-black/50 rounded-lg p-2">
             <button
-              onClick={toggleFullscreen}
+              onClick={isFullscreen ? exitFullscreen : enterFullscreen}
               className="text-white hover:text-gray-300"
             >
-              <Maximize size={20} />
+              {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
             </button>
           </div>
         </div>
