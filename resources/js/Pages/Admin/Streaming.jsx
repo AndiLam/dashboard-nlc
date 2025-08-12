@@ -1,43 +1,41 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Hls from 'hls.js';
-import { Maximize } from 'lucide-react';
+import { Play, Pause, Maximize, Minimize } from 'lucide-react';
 
 export default function Streaming() {
   const videoRef = useRef(null);
-  const [isOnline, setIsOnline] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    let hls;
     if (Hls.isSupported()) {
-      hls = new Hls();
+      const hls = new Hls();
       hls.loadSource('/stream/playlist.m3u8');
       hls.attachMedia(videoRef.current);
-
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        setIsOnline(true);
-        videoRef.current.play().catch(() => {});
-      });
-
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        if (data.fatal) {
-          setIsOnline(false);
-        }
-      });
     } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
       videoRef.current.src = '/stream/playlist.m3u8';
-      videoRef.current.addEventListener('loadeddata', () => setIsOnline(true));
-      videoRef.current.addEventListener('error', () => setIsOnline(false));
     }
-
-    return () => {
-      if (hls) hls.destroy();
-    };
   }, []);
 
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   const toggleFullscreen = () => {
-    if (videoRef.current.requestFullscreen) {
+    if (!document.fullscreenElement) {
       videoRef.current.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
     }
   };
 
@@ -49,31 +47,33 @@ export default function Streaming() {
         <h2 className="text-lg font-semibold mb-2">Live Feed</h2>
 
         <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
-          {/* Video */}
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
             autoPlay
             muted
             playsInline
+            controls={false} // no default controls
           />
 
           {/* Label LIVE di kiri bawah */}
-          <div
-            className={`absolute bottom-2 left-2 px-2 py-1 rounded text-xs font-bold ${
-              isOnline ? 'bg-red-600 text-white' : 'bg-gray-500 text-gray-200'
-            }`}
-          >
+          <div className="absolute bottom-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
             LIVE
           </div>
 
-          {/* Fullscreen Button di kanan bawah */}
-          <div className="absolute bottom-2 right-2 bg-black/50 rounded-lg p-2">
+          {/* Custom Controls */}
+          <div className="absolute bottom-2 right-2 flex items-center gap-2 bg-black/50 rounded-lg px-3 py-1">
+            <button
+              onClick={togglePlay}
+              className="text-white hover:text-gray-300"
+            >
+              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+            </button>
             <button
               onClick={toggleFullscreen}
               className="text-white hover:text-gray-300"
             >
-              <Maximize size={20} />
+              {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
             </button>
           </div>
         </div>
