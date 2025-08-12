@@ -20,21 +20,16 @@ Route::get('/push-count', [PushController::class, 'count']);
 Route::get('/stream-status', function () {
     $playlistPath = public_path('stream/playlist.m3u8');
 
-    $status = 'Offline';
     if (File::exists($playlistPath)) {
         $lastModified = File::lastModified($playlistPath);
+
         if (time() - $lastModified <= 5) {
-            $status = 'Online';
+            return response()->json(['status' => 'Online']);
         }
     }
 
-    return response()->json([
-        'data' => [
-            ['value' => $status]
-        ]
-    ]);
+    return response()->json(['status' => 'Offline']);
 });
-
 
 // Endpoint untuk manajemen wajah dikenal
 Route::get('/wajah-dikenal', [WajahDikenalController::class, 'index']);

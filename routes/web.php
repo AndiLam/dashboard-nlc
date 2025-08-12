@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 Route::get('/uji-push', function () {
-    PushNotification::send('Judul Uji', 'Isi dari hosting!');
+    PushNotification::send('Uji Notifikasi', 'Ada Wajah Tidak Dikenal');
     return 'Notifikasi dikirim.';
 });
 
