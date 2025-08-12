@@ -1,32 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import Hls from 'hls.js';
-import { Play, Pause, Maximize } from 'lucide-react';
+import { Maximize } from 'lucide-react';
 
 export default function Streaming() {
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
+    let hls;
     if (Hls.isSupported()) {
-      const hls = new Hls();
+      hls = new Hls();
       hls.loadSource('/stream/playlist.m3u8');
       hls.attachMedia(videoRef.current);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setIsOnline(true);
+        videoRef.current.play().catch(() => {});
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+          setIsOnline(false);
+        }
+      });
     } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
       videoRef.current.src = '/stream/playlist.m3u8';
+      videoRef.current.addEventListener('loadeddata', () => setIsOnline(true));
+      videoRef.current.addEventListener('error', () => setIsOnline(false));
     }
-  }, []);
 
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoRef.current.play();
-      setIsPlaying(true);
-    }
-  };
+    return () => {
+      if (hls) hls.destroy();
+    };
+  }, []);
 
   const toggleFullscreen = () => {
     if (videoRef.current.requestFullscreen) {
@@ -42,11 +49,7 @@ export default function Streaming() {
         <h2 className="text-lg font-semibold mb-2">Live Feed</h2>
 
         <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
-          {/* Label LIVE */}
-          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-            LIVE
-          </div>
-
+          {/* Video */}
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
@@ -55,14 +58,17 @@ export default function Streaming() {
             playsInline
           />
 
-          {/* Custom Controls */}
-          <div className="absolute bottom-2 left-2 flex items-center gap-2 bg-black/50 rounded-lg px-3 py-1">
-            <button
-              onClick={togglePlay}
-              className="text-white hover:text-gray-300"
-            >
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-            </button>
+          {/* Label LIVE di kiri bawah */}
+          <div
+            className={`absolute bottom-2 left-2 px-2 py-1 rounded text-xs font-bold ${
+              isOnline ? 'bg-red-600 text-white' : 'bg-gray-500 text-gray-200'
+            }`}
+          >
+            LIVE
+          </div>
+
+          {/* Fullscreen Button di kanan bawah */}
+          <div className="absolute bottom-2 right-2 bg-black/50 rounded-lg p-2">
             <button
               onClick={toggleFullscreen}
               className="text-white hover:text-gray-300"
