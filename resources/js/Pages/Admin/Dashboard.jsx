@@ -26,8 +26,8 @@ export default function Dashboard() {
       setTotalWajah(results[0].status === 'fulfilled' ? results[0].value.data.length || 0 : 0);
       setLogHariIni(results[1].status === 'fulfilled' ? results[1].value.data.total || 0 : 0);
       setJumlahNotif(results[2].status === 'fulfilled' ? results[2].value.data.total || 0 : 0);
-      setAktivitas(results[3].status === 'fulfilled' ? results[4].value.data || [] : []);
-      setStreamingStatus(results[4].status === 'fulfilled' ? results[5].value.data.status || 'Offline' : 'Offline');
+      setAktivitas(results[3].status === 'fulfilled' ? results[3].value.data || [] : []);
+      setStreamingStatus(results[4].status === 'fulfilled' ? results[4].value.data.status || 'Offline' : 'Offline');
     } catch (error) {
       console.error('Error memuat data dashboard:', error);
     }
