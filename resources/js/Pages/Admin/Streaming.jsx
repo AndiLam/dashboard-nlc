@@ -38,7 +38,18 @@ export default function Streaming() {
         document.fullscreenElement ||
         document.webkitFullscreenElement ||
         document.msFullscreenElement;
-      setIsFullscreen(!!fsElement);
+
+      const fullscreenActive = !!fsElement;
+      setIsFullscreen(fullscreenActive);
+
+      // Auto rotate on mobile
+      if (fullscreenActive && screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {
+          // Beberapa browser mungkin tidak mengizinkan tanpa user gesture
+        });
+      } else if (!fullscreenActive && screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
+      }
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
