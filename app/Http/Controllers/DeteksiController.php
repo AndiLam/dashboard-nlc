@@ -10,9 +10,26 @@ use Illuminate\Support\Facades\Http;
 
 class DeteksiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return LogDeteksi::orderByDesc('waktu')->get();
+        $query = LogDeteksi::query();
+
+        // Filter hanya log hari ini
+        if ($request->has('today') && $request->today == 1) {
+            $query->whereDate('waktu', now()->toDateString());
+        }
+
+        // Limit jumlah data
+        if ($request->has('limit') && is_numeric($request->limit)) {
+            $query->limit((int) $request->limit);
+        }
+
+        $data = $query->orderByDesc('waktu')->get();
+
+        return response()->json([
+            'total' => $data->count(),
+            'data'  => $data
+        ]);
     }
 
     public function store(Request $request)

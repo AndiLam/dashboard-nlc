@@ -3,77 +3,64 @@ import AdminLayout from '@/Layouts/AdminLayout';
 import axios from '@/lib/axios';
 
 export default function Dashboard() {
-  const [totalWajah, setTotalWajah] = useState(0);
+  const [totalWajahDikenal, setTotalWajahDikenal] = useState(0);
+  const [totalWajahTidakDikenal, setTotalWajahTidakDikenal] = useState(0);
   const [logHariIni, setLogHariIni] = useState(0);
-  const [jumlahNotif, setJumlahNotif] = useState(0);
-  const [streamingStatus, setStreamingStatus] = useState('Offline');
   const [aktivitas, setAktivitas] = useState([]);
+  const [statusStreaming, setStatusStreaming] = useState('Tidak Aktif');
 
   useEffect(() => {
-    fetchDashboardData();
+    Promise.allSettled([
+      axios.get('/api/wajah-dikenal/total'),
+      axios.get('/api/wajah-tidak-dikenal/total'),
+      axios.get('/api/log-deteksi?today=1'),
+      axios.get('/api/log-deteksi?limit=3'),
+      axios.get('/api/streaming/status') // ✅ tambahkan request status streaming
+    ]).then(results => {
+      setTotalWajahDikenal(results[0].status === 'fulfilled' ? results[0].value.data.total : 0);
+      setTotalWajahTidakDikenal(results[1].status === 'fulfilled' ? results[1].value.data.total : 0);
+      setLogHariIni(results[2].status === 'fulfilled' ? results[2].value.data.total : 0);
+      setAktivitas(results[3].status === 'fulfilled' ? (results[3].value.data.data || []) : []);
+      setStatusStreaming(results[4].status === 'fulfilled' ? results[4].value.data.status : 'Tidak Aktif');
+    });
   }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      const results = await Promise.allSettled([
-        axios.get('/api/wajah-dikenal'),             // [0]
-        axios.get('/api/log-deteksi?today=1'),       // [1]
-        axios.get('/api/push-count'),                // [2]
-        axios.get('/api/log-deteksi?limit=3'),       // [3]
-        axios.get('/api/stream-status'),             // [4]
-      ]);
-
-      setTotalWajah(results[0].status === 'fulfilled' ? results[0].value.data.length || 0 : 0);
-      setLogHariIni(results[1].status === 'fulfilled' ? results[1].value.data.total || 0 : 0);
-      setJumlahNotif(results[2].status === 'fulfilled' ? results[2].value.data.total || 0 : 0);
-      setAktivitas(results[3].status === 'fulfilled' ? results[3].value.data || [] : []);
-      setStreamingStatus(results[4].status === 'fulfilled' ? results[4].value.data.status || 'Offline' : 'Offline');
-    } catch (error) {
-      console.error('Error memuat data dashboard:', error);
-    }
-  };
 
   return (
     <AdminLayout>
-      <h1 className="text-3xl font-bold mb-6">Dashboard Admin</h1>
+      <h1 className="text-xl font-bold mb-4">Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-sm font-medium mb-1">Total Wajah Dikenal</h2>
-          <p className="text-2xl font-bold text-blue-600">{totalWajah}</p>
+      <div className="grid grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="font-semibold">Wajah Dikenal</h2>
+          <p className="text-2xl">{totalWajahDikenal}</p>
         </div>
-
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-sm font-medium mb-1">Log Deteksi Hari Ini</h2>
-          <p className="text-2xl font-bold text-green-600">{logHariIni}</p>
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="font-semibold">Wajah Tidak Dikenal</h2>
+          <p className="text-2xl">{totalWajahTidakDikenal}</p>
         </div>
-
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-sm font-medium mb-1">Notifikasi Terkirim</h2>
-          <p className="text-2xl font-bold text-yellow-600">{jumlahNotif}</p>
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="font-semibold">Log Deteksi Hari Ini</h2>
+          <p className="text-2xl">{logHariIni}</p>
         </div>
-
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h2 className="text-sm font-medium mb-1">Status Streaming</h2>
-          <p className="text-2xl font-bold text-gray-500">{streamingStatus}</p>
+        <div className={`p-4 rounded shadow ${statusStreaming === 'Aktif' ? 'bg-green-100' : 'bg-red-100'}`}>
+          <h2 className="font-semibold">Status Streaming</h2>
+          <p className={`text-2xl font-bold ${statusStreaming === 'Aktif' ? 'text-green-600' : 'text-red-600'}`}>
+            {statusStreaming}
+          </p>
         </div>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Aktivitas Terbaru</h2>
-        <ul className="space-y-2 text-sm">
-          {aktivitas.map((item, i) => (
-            <li key={i}>
-              🕒 {new Date(item.waktu).toLocaleDateString('id-ID')} [{new Date(item.waktu).toLocaleTimeString('id-ID')}] {item.status === 'Dikenal' ? (
-                <>Wajah dikenali: <strong>{item.nama}</strong></>
-              ) : (
-                <>Wajah <strong>tidak dikenal</strong> terdeteksi</>
-              )}
-            </li>
-          ))}
-
-          {aktivitas.length === 0 && (
-            <li className="text-gray-500">Tidak ada aktivitas terbaru</li>
+      <div className="mt-6 bg-white p-4 rounded shadow">
+        <h2 className="font-semibold mb-2">Aktivitas Terbaru</h2>
+        <ul>
+          {aktivitas.length > 0 ? (
+            aktivitas.map((item, idx) => (
+              <li key={idx} className="border-b py-2">
+                {item.nama || 'Tidak Diketahui'} - {item.waktu}
+              </li>
+            ))
+          ) : (
+            <li className="text-gray-500">Tidak ada data</li>
           )}
         </ul>
       </div>
